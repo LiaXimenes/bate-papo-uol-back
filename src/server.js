@@ -32,11 +32,10 @@ server.post("/participants", (request, response) => {
 
 server.post("/messages", (request, response) => {
     const user = request.headers.user;
-    
     if(request.body.to === "" || request.body.text === ""){
         response.sendStatus(400);
 
-    // } else if(tipo de mensagem !== 'message ou private_message'){
+    // } else if(tipo de mensagem !== 'message' ou 'private_message'){
     //     response.sendStatus(400);  
     } else{
         for (let i = 0; i < participants.length; i++){
@@ -70,7 +69,6 @@ server.get("/messages", (request, response) =>{
 
 server.post("/status", (request, response) =>{
     const user = request.headers.user;
-    console.log(user);
     for (let i = 0; i < participants.length; i++){
         if(participants[i].name.includes(user)){
             participants[i].lastStatus = Date.now();
@@ -82,27 +80,19 @@ server.post("/status", (request, response) =>{
     }
 })
 
-
-
-
-// setInterval(() => {
-//     for(let i = 0; i < participants.length; i++){
-//         const aa = Date.now() - participants[i].lastStatus;
-//         console.log(aa)
-//         if(Date.now() - participants[i].lastStatus > 10){
-//             messages.push({
-//                 from: participants[i].name,
-//                 to: 'Todos',
-//                 text: 'sai da sala...', 
-//                 type: 'status', 
-//                 time: dayjs().format('HH:mm:ss')
-//             })
-//         }
-//         console.log(messages)
-//     }
-   
-// },15000)
-
-
+setInterval(() => {
+    participants.forEach((participant, i) => {
+        if(participant.lastStatus < Date.now() - 10000){
+            messages.push({
+                from: participant.name,
+                to: 'Todos',
+                text: 'sai da sala...', 
+                type: 'status', 
+                time: dayjs().format('HH:mm:ss')
+            });
+            participants.splice(i,1)
+        }
+    });
+}, 15000);
 
 server.listen(4000);
