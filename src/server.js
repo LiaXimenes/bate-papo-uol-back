@@ -36,7 +36,7 @@ server.post("/messages", (request, response) => {
     if(request.body.to === "" || request.body.text === ""){
         response.sendStatus(400);
 
-    // } else if(tipo de mensagem !== 'mensagem'){
+    // } else if(tipo de mensagem !== 'message ou private_message'){
     //     response.sendStatus(400);  
     } else{
         for (let i = 0; i < participants.length; i++){
@@ -59,11 +59,13 @@ server.post("/messages", (request, response) => {
 
 server.get("/messages", (request, response) =>{
     const user = request.headers.user;
-    // const quantity  = request.query;
-    // console.log(quantity);
-
-    response.send(messages);
-    
+    const quantity  = parseInt(request.query.limit);
+    if(quantity === null){
+        response.send(messages);
+    } else{
+        const selectedMessages = messages.slice((-quantity));
+        response.send(selectedMessages);
+    }
 })
 
 server.post("/status", (request, response) =>{
@@ -79,5 +81,28 @@ server.post("/status", (request, response) =>{
         }
     }
 })
+
+
+
+
+// setInterval(() => {
+//     for(let i = 0; i < participants.length; i++){
+//         const aa = Date.now() - participants[i].lastStatus;
+//         console.log(aa)
+//         if(Date.now() - participants[i].lastStatus > 10){
+//             messages.push({
+//                 from: participants[i].name,
+//                 to: 'Todos',
+//                 text: 'sai da sala...', 
+//                 type: 'status', 
+//                 time: dayjs().format('HH:mm:ss')
+//             })
+//         }
+//         console.log(messages)
+//     }
+   
+// },15000)
+
+
 
 server.listen(4000);
